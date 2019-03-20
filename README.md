@@ -39,7 +39,7 @@ OUTPUT: values provided by the c++ program to the simulator
 ["rmse_vy"]
 
 ---
-Finally i got the result：
+Finally I got the result：
 RMSE:
 0.0972256
 0.0853761
