@@ -32,6 +32,12 @@ void KalmanFilter::Predict() {
   P_ = F_ * P_ * Ft + Q_;
 }
 
+//implement a function/method for normalization.
+//This function could be verified once using unit testing.
+void NormalizeAngle(double& phi){
+  phi = atan2(sin(phi), cos(phi));
+  }
+
 void KalmanFilter::Update(const VectorXd &z) {
   /**
    * TODO: update the state by using Kalman Filter equations
@@ -46,10 +52,14 @@ void KalmanFilter::Update(const VectorXd &z) {
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
    //new estimate
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  x_ += (K * y); 
+  P_ -= K * H_ * P_;
+	
+  //x_ = x_ + (K * y);
+  //long x_size = x_.size();
+  //MatrixXd I = MatrixXd::Identity(x_size, x_size);
+  //P_ = (I - K * H_) * P_;
+  
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -58,16 +68,17 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    */
   // For RADA data, we use Hj jacobian insted of H
 
-	float px = x_(0);
+  float px = x_(0);
   float py = x_(1);
   float vx = x_(2);
   float vy = x_(3);
-
+ 
+ //Avoid division by zero
   float ro = sqrt(px*px + py*py);
   if (ro < .00001) {
     px += .001;
     py += .001;
-    ro = sqrt(px*px + py*py);
+    //ro = sqrt(px*px + py*py);
   }
   float theta = atan2(py , px);
   float ro_dot = (px*vx + py*vy) / ro;
@@ -76,10 +87,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
   VectorXd y = z - z_pred;
 
-  // make sure that the angle is between -pi and pi
-  for (; y(1) < -M_PI; y(1) += 2*M_PI) {}
-  for (; y(1) > M_PI;  y(1) -= 2*M_PI) {}
-    
+  // make sure that the angle is between -pi and pi,first is a solution
+  //for (; y(1) < -M_PI; y(1) += 2*M_PI) {}
+  //for (; y(1) > M_PI;  y(1) -= 2*M_PI) {}
+  
+  //second solution,call NormalizeAngle function
+  NormalizeAngle(y(1));
  
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
@@ -88,9 +101,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
 
   // new estimate
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  x_ += (K * y); 
+  P_ -= K * H_ * P_;
 
 }
