@@ -49,6 +49,9 @@ FusionEKF::FusionEKF() {
              0, 1, 0, 1,
              0, 0, 1, 0,
              0, 0, 0, 1;
+  
+  //ekf_.F_ = MatrixXd::Identity(4,4);
+  
   //laser measurement matrix
   H_laser_ << 1, 0, 0, 0,
              0, 1, 0, 0;
