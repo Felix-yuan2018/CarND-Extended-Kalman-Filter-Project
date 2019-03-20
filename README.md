@@ -39,12 +39,12 @@ OUTPUT: values provided by the c++ program to the simulator
 ["rmse_vy"]
 
 ---
-/Finally I got the result：
-/RMSE:
-/0.0972256
-/0.0853761
-/0.450855
-/0.439588
+Finally I got the result：
+RMSE:
+rmse_x = 0.0972256;  
+rmse_y = 0.0853761;  
+rmse_vx = 0.450855;  
+rmse_vy = 0.439588
 
 ## Other Important Dependencies
 
